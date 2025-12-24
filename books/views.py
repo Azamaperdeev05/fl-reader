@@ -1,18 +1,46 @@
 import os
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse
+from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponse
 from django.views.decorators.http import require_http_methods
 from django.core.files import File
+from django.db.models import Q
+from django.contrib import messages
 from .models import Book
 from .services.flibusta_service import FlibustaService
 from .services.fb2_parser import FB2Parser
 from .services.reading_service import ReadingService
+from .utils import is_htmx
 
 
 @require_http_methods(["GET"])
 def library_view(request):
     books = Book.objects.all()
-    return render(request, 'books/library.html', {'books': books})
+    query = request.GET.get('q', '').strip()
+    flibusta_results = []
+    flibusta_error = None
+
+    if query:
+        books = books.filter(
+            Q(title__icontains=query) | Q(author__icontains=query)
+        )
+
+        try:
+            service = FlibustaService()
+            flibusta_results = service.search(query)
+        except Exception as e:
+            flibusta_error = str(e)
+
+    context = {
+        'books': books,
+        'query': query,
+        'flibusta_results': flibusta_results,
+        'flibusta_error': flibusta_error
+    }
+
+    if is_htmx(request):
+        return render(request, 'books/partials/search_results.html', context)
+
+    return render(request, 'books/library.html', context)
 
 
 @require_http_methods(["GET"])
@@ -25,6 +53,8 @@ def book_detail_view(request, book_id):
             'text': text
         })
     except Exception as e:
+        if is_htmx(request):
+            return HttpResponse(f'<div class="error text-red-400">{str(e)}</div>', status=400)
         return render(request, 'books/error.html', {'error': str(e)})
 
 
@@ -33,9 +63,9 @@ def update_progress_view(request, book_id):
     try:
         progress = request.POST.get('progress', 0)
         ReadingService.update_progress(book_id, progress)
-        return JsonResponse({'success': True, 'progress': progress})
+        return HttpResponse(status=204)
     except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)}, status=400)
+        return HttpResponse(f'Error: {str(e)}', status=400)
 
 
 @require_http_methods(["GET"])
@@ -43,14 +73,17 @@ def search_view(request):
     query = request.GET.get('q', '').strip()
 
     if not query:
-        return JsonResponse({'results': []})
+        return render(request, 'books/partials/flibusta_results.html', {'results': []})
 
     try:
         service = FlibustaService()
         results = service.search(query)
-        return JsonResponse({'success': True, 'results': results})
+        return render(request, 'books/partials/flibusta_results.html', {'results': results})
     except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)}, status=400)
+        return render(request, 'books/partials/flibusta_results.html', {
+            'results': [],
+            'error': str(e)
+        })
 
 
 @require_http_methods(["POST"])
@@ -60,7 +93,7 @@ def download_book_view(request):
     author = request.POST.get('author', 'Неизвестный автор')
 
     if not book_id:
-        return JsonResponse({'success': False, 'error': 'Не указан ID книги'}, status=400)
+        return HttpResponse('<div class="error">Не указан ID книги</div>', status=400)
 
     try:
         service = FlibustaService()
@@ -85,15 +118,22 @@ def download_book_view(request):
         if os.path.exists(file_path):
             os.remove(file_path)
 
-        return JsonResponse({
-            'success': True,
-            'book_id': str(book.id),
-            'title': book.title,
-            'author': book.author
-        })
+        if is_htmx(request):
+            messages.success(request, f'Книга "{book.title}" успешно скачана')
+
+            books = Book.objects.all()
+            context = {
+                'books': books,
+                'query': '',
+                'flibusta_results': [],
+                'flibusta_error': None
+            }
+            return render(request, 'books/partials/search_results.html', context)
+
+        return HttpResponse('OK')
 
     except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)}, status=400)
+        return HttpResponse(f'<div class="error">Ошибка: {str(e)}</div>', status=400)
 
 
 @require_http_methods(["DELETE", "POST"])
@@ -111,6 +151,10 @@ def delete_book_view(request, book_id):
 
         book.delete()
 
-        return JsonResponse({'success': True})
+        if is_htmx(request):
+            messages.success(request, 'Книга удалена')
+            return HttpResponse('')
+
+        return HttpResponse('OK')
     except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)}, status=400)
+        return HttpResponse(f'<div class="error">{str(e)}</div>', status=400)

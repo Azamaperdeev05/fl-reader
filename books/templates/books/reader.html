@@ -1,6 +1,65 @@
 {% extends "books/base.html" %}
+{% load static %}
 
-{% block title %}{{ book.title }} - Lumina Reader{% endblock %}
+{% block title %}{{ book.title }} - {{ book.author }} | Читать онлайн - Lumina Reader{% endblock %}
+
+{% block description %}Читать книгу "{{ book.title }}" автора {{ book.author }} онлайн в Lumina Reader. Удобный интерфейс, сохранение прогресса, настройка отображения текста.{% endblock %}
+
+{% block keywords %}{{ book.title }}, {{ book.author }}, читать онлайн, электронная книга, fb2, онлайн ридер{% endblock %}
+
+{% block og_type %}book{% endblock %}
+{% block og_title %}{{ book.title }} - {{ book.author }}{% endblock %}
+{% block og_description %}Читать "{{ book.title }}" автора {{ book.author }} онлайн в Lumina Reader{% endblock %}
+
+{% block og_image %}
+{% if book.cover %}
+<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ book.cover.url }}">
+<meta property="og:image:width" content="800">
+<meta property="og:image:height" content="1200">
+{% else %}
+<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'favicon.svg' %}">
+{% endif %}
+<meta property="og:image:alt" content="Обложка книги {{ book.title }}">
+<meta property="book:author" content="{{ book.author }}">
+{% endblock %}
+
+{% block twitter_title %}{{ book.title }} - {{ book.author }}{% endblock %}
+{% block twitter_description %}Читать онлайн в Lumina Reader{% endblock %}
+
+{% block twitter_image %}
+{% if book.cover %}
+<meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{{ book.cover.url }}">
+<meta name="twitter:image:alt" content="Обложка книги {{ book.title }}">
+{% else %}
+<meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'favicon.svg' %}">
+{% endif %}
+{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Book",
+    "name": "{{ book.title }}",
+    "author": {
+        "@type": "Person",
+        "name": "{{ book.author }}"
+    },
+    "datePublished": "{{ book.created_at|date:'Y-m-d' }}",
+    {% if book.cover %}
+    "image": "{{ request.scheme }}://{{ request.get_host }}{{ book.cover.url }}",
+    {% endif %}
+    "bookFormat": "EBook",
+    "inLanguage": "ru",
+    "isAccessibleForFree": true,
+    "url": "{{ request.build_absolute_uri }}",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Lumina Reader"
+    }
+}
+</script>
+{% endblock %}
 
 {% block content %}
 {% include "books/partials/reader_content.html" %}

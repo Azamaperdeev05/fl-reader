@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /book/*/delete/
+Disallow: /download/
+Disallow: /search/
+
+Sitemap: https://yourdomain.com/sitemap.xml

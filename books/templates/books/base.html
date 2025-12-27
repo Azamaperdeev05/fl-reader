@@ -4,12 +4,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Lumina Reader{% endblock %}</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>{% block title %}Lumina Reader - Онлайн библиотека для чтения книг{% endblock %}</title>
+
+    <meta name="description" content="{% block description %}Lumina Reader - современная веб-библиотека для чтения книг онлайн. Скачивайте книги с Флибусты, читайте в удобном интерфейсе с сохранением прогресса и настройкой отображения.{% endblock %}">
+    <meta name="keywords" content="{% block keywords %}читать книги онлайн, веб-библиотека, флибуста, fb2, электронные книги, онлайн ридер, lumina reader{% endblock %}">
+    <meta name="author" content="Lumina Reader">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{% block canonical %}{{ request.build_absolute_uri }}{% endblock %}">
+
+    <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}">
+    <link rel="apple-touch-icon" href="{% static 'favicon.svg' %}">
+
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}Lumina Reader - Онлайн библиотека для чтения книг{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Современная веб-библиотека для чтения книг онлайн с удобным интерфейсом и сохранением прогресса{% endblock %}">
+    <meta property="og:url" content="{% block og_url %}{{ request.build_absolute_uri }}{% endblock %}">
+    <meta property="og:site_name" content="Lumina Reader">
+    <meta property="og:locale" content="ru_RU">
+    {% block og_image %}
+    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'favicon.svg' %}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    {% endblock %}
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{% block twitter_title %}Lumina Reader - Онлайн библиотека{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Читайте книги онлайн с удобным интерфейсом и сохранением прогресса{% endblock %}">
+    {% block twitter_image %}
+    <meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'favicon.svg' %}">
+    {% endblock %}
+
+    <meta name="theme-color" content="#000000">
+    <meta name="color-scheme" content="dark">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/htmx.org@2.0.4"></script>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    {% block structured_data %}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Lumina Reader",
+        "description": "Онлайн библиотека для чтения книг",
+        "url": "{{ request.scheme }}://{{ request.get_host }}",
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "{{ request.scheme }}://{{ request.get_host }}/search/?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
+    {% endblock %}
 
     <style>
         body {

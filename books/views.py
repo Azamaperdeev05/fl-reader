@@ -198,3 +198,43 @@ def last_read_view(request):
             return redirect('books:library')
 
     return redirect('books:book_detail', book_id=last_book.id)
+
+
+@require_http_methods(["GET"])
+def sitemap_view(request):
+    books = Book.objects.all()
+
+    sitemap_xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    sitemap_xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+
+    sitemap_xml += '  <url>\n'
+    sitemap_xml += f'    <loc>{request.scheme}://{request.get_host()}/</loc>\n'
+    sitemap_xml += '    <changefreq>daily</changefreq>\n'
+    sitemap_xml += '    <priority>1.0</priority>\n'
+    sitemap_xml += '  </url>\n'
+
+    for book in books:
+        sitemap_xml += '  <url>\n'
+        sitemap_xml += f'    <loc>{request.scheme}://{request.get_host()}/book/{book.id}/</loc>\n'
+        sitemap_xml += f'    <lastmod>{book.created_at.strftime("%Y-%m-%d")}</lastmod>\n'
+        sitemap_xml += '    <changefreq>monthly</changefreq>\n'
+        sitemap_xml += '    <priority>0.8</priority>\n'
+        sitemap_xml += '  </url>\n'
+
+    sitemap_xml += '</urlset>'
+
+    return HttpResponse(sitemap_xml, content_type='application/xml')
+
+
+@require_http_methods(["GET"])
+def robots_view(request):
+    robots_txt = f"""User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /book/*/delete/
+Disallow: /download/
+Disallow: /search/
+
+Sitemap: {request.scheme}://{request.get_host()}/sitemap.xml
+"""
+    return HttpResponse(robots_txt, content_type='text/plain')

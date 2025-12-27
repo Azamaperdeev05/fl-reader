@@ -1,6 +1,33 @@
 {% extends "books/base.html" %}
 
-{% block title %}Библиотека - Lumina Reader{% endblock %}
+{% block title %}Библиотека книг - Lumina Reader{% endblock %}
+
+{% block description %}Библиотека электронных книг Lumina Reader. Читайте книги онлайн, скачивайте с Флибусты, сохраняйте прогресс чтения. Удобный интерфейс и широкий выбор книг.{% endblock %}
+
+{% block keywords %}библиотека книг, электронные книги, читать онлайн, скачать книги, флибуста, fb2, онлайн ридер{% endblock %}
+
+{% block og_title %}Библиотека книг - Lumina Reader{% endblock %}
+{% block og_description %}Онлайн библиотека с удобным интерфейсом для чтения книг. Скачивайте и читайте электронные книги прямо в браузере.{% endblock %}
+
+{% block twitter_title %}Библиотека книг - Lumina Reader{% endblock %}
+{% block twitter_description %}Онлайн библиотека для чтения электронных книг{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Библиотека книг",
+    "description": "Онлайн библиотека электронных книг",
+    "url": "{{ request.build_absolute_uri }}",
+    "isPartOf": {
+        "@type": "WebSite",
+        "name": "Lumina Reader",
+        "url": "{{ request.scheme }}://{{ request.get_host }}"
+    }
+}
+</script>
+{% endblock %}
 
 {% block content %}
 {% include "books/partials/library_content.html" %}

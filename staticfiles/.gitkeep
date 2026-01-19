@@ -1,0 +1,2 @@
+# This directory is required for WhiteNoise staticfiles storage
+# Run 'python manage.py collectstatic' to populate this directory

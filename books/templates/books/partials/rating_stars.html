@@ -1,0 +1,30 @@
+{% comment %}
+Рейтинг жұлдызшалары - HTMX арқылы жаңартылады
+{% endcomment %}
+
+<div class="flex items-center gap-1" x-data="{ hoverRating: 0 }">
+    {% for i in "12345"|make_list %}
+    <form hx-post="{% url 'books:set_rating' book.id %}"
+          hx-swap="outerHTML"
+          hx-target="closest .flex"
+          hx-trigger="click"
+          hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+        <input type="hidden" name="rating" value="{{ i }}">
+        <button type="button"
+                @mouseenter="hoverRating = {{ i }}"
+                @mouseleave="hoverRating = 0"
+                class="focus:outline-none transition-transform active:scale-95"
+                title="{{ i }} жұлдыз">
+            <svg class="w-5 h-5 transition-colors duration-200"
+                 :class="{
+                    'text-yellow-400': (hoverRating >= {{ i }}) || (!hoverRating && {{ book.rating|default:0 }} >= {{ i }}),
+                    'text-white/20': !((hoverRating >= {{ i }}) || (!hoverRating && {{ book.rating|default:0 }} >= {{ i }}))
+                 }"
+                 fill="currentColor"
+                 viewBox="0 0 24 24">
+                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+            </svg>
+        </button>
+    </form>
+    {% endfor %}
+</div>

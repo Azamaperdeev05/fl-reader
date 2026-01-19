@@ -1,0 +1,18 @@
+{% comment %}
+Таңдаулы батырмасы - HTMX арқылы жаңартылады
+{% endcomment %}
+
+<button hx-post="{% url 'books:toggle_favorite' book.id %}"
+        hx-swap="outerHTML"
+        hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+        class="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300
+               {% if book.is_favorite %}
+               bg-red-500/20 text-red-400 hover:bg-red-500/30
+               {% else %}
+               bg-white/5 text-white/40 hover:bg-white/10 hover:text-white/60
+               {% endif %}"
+        title="{% if book.is_favorite %}Таңдаулылардан алу{% else %}Таңдаулыларға қосу{% endif %}">
+    <svg class="w-5 h-5" fill="{% if book.is_favorite %}currentColor{% else %}none{% endif %}" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+    </svg>
+</button>

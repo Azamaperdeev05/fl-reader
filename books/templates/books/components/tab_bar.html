@@ -18,11 +18,44 @@
            hx-target="#main-content"
            hx-swap="innerHTML"
            hx-push-url="true"
-           class="flex flex-col items-center gap-1 opacity-50 hover:opacity-100 transition-opacity cursor-pointer">
-            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-            </svg>
-            <span class="text-[10px] font-medium">Чтение</span>
+           class="flex flex-col items-center gap-1 {% if request.resolver_match.url_name == 'last_read' %}group{% else %}opacity-50 hover:opacity-100 transition-opacity{% endif %} cursor-pointer relative">
+            <div class="{% if request.resolver_match.url_name == 'last_read' %}w-6 h-6 rounded-full bg-blue-500/80 shadow-[0_0_15px_rgba(59,130,246,0.5)] flex items-center justify-center{% endif %}">
+                <svg class="w-4 h-4 {% if request.resolver_match.url_name == 'last_read' %}text-white{% else %}w-6 h-6{% endif %}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+            </div>
+            <span class="text-[10px] font-medium {% if request.resolver_match.url_name == 'last_read' %}text-blue-400{% endif %}">Чтение</span>
+        </a>
+
+        <a href="{% url 'books:favorites' %}"
+           hx-get="{% url 'books:favorites' %}"
+           hx-target="#main-content"
+           hx-swap="innerHTML"
+           hx-push-url="true"
+           class="flex flex-col items-center gap-1 {% if is_favorites_page %}group{% else %}opacity-50 hover:opacity-100 transition-opacity{% endif %} cursor-pointer relative">
+            <div class="{% if is_favorites_page %}w-6 h-6 rounded-full bg-red-500/80 shadow-[0_0_15px_rgba(239,68,68,0.5)] flex items-center justify-center{% endif %}">
+                <svg class="w-4 h-4 {% if is_favorites_page %}text-white{% else %}w-6 h-6{% endif %}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+            </div>
+            <span class="text-[10px] font-medium {% if is_favorites_page %}text-red-400{% endif %}">Избранное</span>
+            {% if favorites_count and favorites_count > 0 %}
+            <span class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full text-[8px] flex items-center justify-center text-white">{{ favorites_count }}</span>
+            {% endif %}
+        </a>
+
+        <a href="{% url 'books:profile' %}"
+           hx-get="{% url 'books:profile' %}"
+           hx-target="#main-content"
+           hx-swap="innerHTML"
+           hx-push-url="true"
+           class="flex flex-col items-center gap-1 {% if request.resolver_match.url_name == 'profile' %}group{% else %}opacity-50 hover:opacity-100 transition-opacity{% endif %} cursor-pointer relative">
+            <div class="{% if request.resolver_match.url_name == 'profile' %}w-6 h-6 rounded-full bg-purple-500/80 shadow-[0_0_15px_rgba(168,85,247,0.5)] flex items-center justify-center{% endif %}">
+                <svg class="w-4 h-4 {% if request.resolver_match.url_name == 'profile' %}text-white{% else %}w-6 h-6{% endif %}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+            </div>
+            <span class="text-[10px] font-medium {% if request.resolver_match.url_name == 'profile' %}text-purple-400{% endif %}">Профиль</span>
         </a>
     </div>
 </nav>

@@ -26,6 +26,7 @@
         </div>
         {% endif %}
 
+        <!-- Жоғарғы оң жақ: Өшіру (Delete) -->
         <button class="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/50 backdrop-blur-sm hover:bg-red-500/80 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100 z-10"
                 hx-delete="{% url 'books:delete_book' book.id %}"
                 hx-confirm="Удалить книгу '{{ book.title }}'?"
@@ -36,11 +37,24 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
         </button>
+
+        <!-- Жоғарғы сол жақ: Таңдаулы (Favorite) -->
+        <div class="absolute top-2 left-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity"
+             onclick="event.stopPropagation();">
+             {% include "books/partials/favorite_button.html" %}
+        </div>
     </div>
 
-    <div class="px-1">
-        <h3 class="text-sm font-semibold truncate group-hover:text-blue-400 transition-colors">{{ book.title }}</h3>
-        <p class="text-xs text-white/40 truncate">{{ book.author }}</p>
+    <div class="px-1 flex flex-col gap-1">
+        <div>
+            <h3 class="text-sm font-semibold truncate group-hover:text-blue-400 transition-colors">{{ book.title }}</h3>
+            <p class="text-xs text-white/40 truncate">{{ book.author }}</p>
+        </div>
+        
+        <!-- Рейтинг жұлдызшалары -->
+        <div class="flex items-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity" onclick="event.stopPropagation();">
+            {% include "books/partials/rating_stars.html" %}
+        </div>
     </div>
 </div>
 

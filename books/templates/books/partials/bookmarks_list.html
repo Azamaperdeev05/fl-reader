@@ -1,0 +1,26 @@
+{% if bookmarks %}
+<div class="space-y-2 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+    {% for bookmark in bookmarks %}
+    <div class="group flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors border border-white/5">
+        <button onclick="document.getElementById('content-scroll-area').scrollTop = (document.getElementById('content-scroll-area').scrollHeight - document.getElementById('content-scroll-area').clientHeight) * ({{ bookmark.scroll_position|stringformat:'f' }} / 100); closeBookmarks()"
+                class="flex-1 text-left">
+            <div class="text-sm font-medium text-white/90 truncate">{{ bookmark.title }}</div>
+            <div class="text-xs text-white/40">{{ bookmark.created_at|date:"d.m.Y H:i" }} • {{ bookmark.scroll_position|floatformat:0 }}%</div>
+        </button>
+        
+        <button hx-delete="{% url 'books:delete_bookmark' bookmark.id %}"
+                hx-target="#bookmarks-list"
+                hx-confirm="Бетбелгіні өшіру керек пе?"
+                class="p-2 opacity-0 group-hover:opacity-100 transition-opacity text-red-400 hover:bg-red-500/10 rounded-lg">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+        </button>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-8 text-white/30 text-sm">
+    Бетбелгілер жоқ
+</div>
+{% endif %}
